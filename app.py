@@ -8,10 +8,10 @@ app = Flask(__name__)
 import os
 DB_CONFIG = {
     "host":     os.environ.get("MYSQLHOST", "localhost"),
-    "user":     os.environ.get|("MYSQLUSER", "root"),
-    "password": os.environ.get|("MYSQLPASSWORD", "Kev_in@stkf"),      
-    "database": os.environ.get|("MYSQLDATABASE", "educollect_v2"),
-    "port" :    int(os.environ.get|("MYSQLPORT", "3306"))
+    "user":     os.environ.get("MYSQLUSER", "root"),
+    "password": os.environ.get("MYSQLPASSWORD", "Kev_in@stkf"),      
+    "database": os.environ.get("MYSQLDATABASE", "educollect_v2"),
+    "port" :    int(os.environ.get("MYSQLPORT", "3306"))
 }
 
 
