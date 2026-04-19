@@ -7,11 +7,11 @@ app = Flask(__name__)
 
 import os
 DB_CONFIG = {
-    "host":     os.environ.get("MYSQLHOST", "localhost"),
+    "host":     os.environ.get("MYSQLHOST", "nozomi.proxy.rlwy.net"),
     "user":     os.environ.get("MYSQLUSER", "root"),
-    "password": os.environ.get("MYSQLPASSWORD", "Kev_in@stkf"),      
-    "database": os.environ.get("MYSQLDATABASE", "educollect_v2"),
-    "port" :    int(os.environ.get("MYSQLPORT", "3306"))
+    "password": os.environ.get("MYSQLPASSWORD", "QMIgtbpjwukIQVbVnNQPwenCkhvmHdhE"),      
+    "database": os.environ.get("MYSQLDATABASE", "railway"),
+    "port" :    int(os.environ.get("MYSQLPORT", "18294"))
 }
 
 
