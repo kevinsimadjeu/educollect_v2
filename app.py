@@ -5,32 +5,14 @@ from mysql.connector import Error
 
 app = Flask(__name__)
 
-
 import os
-from urllib.parse import urlparse
-
-mysql_url = os.environ.get("MYSQL_URL", None)
-
-if mysql_url:
-    parsed = urlparse(mysql_url)
-    DB_CONFIG = {
-        "host":     parsed.hostname,
-        "user":     parsed.username,
-        "password": parsed.password,
-        "database": parsed.path[1:],
-        "port":     parsed.port or 3306
-    }
-else:
-    DB_CONFIG = {
-        "host":     "localhost",
-        "user":     "root",
-        "password": "Kev_in@stkf",
-        "database": "educollect_v2",
-        "port":     3306
-    }
-
-
-
+DB_CONFIG = {
+    "host":     os.environ.get("MYSQLHOST", "localhost"),
+    "user":     os.environ.get("MYSQLUSER", "root"),
+    "password": os.environ.get("MYSQLPASSWORD", "Kev_in@stkf"),      
+    "database": os.environ.get("MYSQLDATABASE", "educollect_v2"),
+    "port" :    int(os.environ.get("MYSQLPORT", "3306"))
+}
 
 
 MATIERES = {

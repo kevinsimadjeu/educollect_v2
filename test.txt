@@ -1,8 +1,0 @@
-database   railway
-host    mysql.railway.internal
-passs QMIgtbpjwukIQVbVnNQPwenCkhvmHdhE
-port   3306
-user   root
-
-
-MYSQLPUBLI   mysql://root:QMIgtbpjwukIQVbVnNQPwenCkhvmHdhE@nozomi.proxy.rlwy.net:18294/railway
