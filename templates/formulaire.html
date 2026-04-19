@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduCollect – Formulaire</title>
+  <link rel="stylesheet" href="../static/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <nav>
+    <div class="logo">Edu<span>Collect</span></div>
+    <ul class="nav-links">
+      <li><a href="/">Accueil</a></li>
+      <li><a href="/dashboard">Statistiques</a></li>
+    </ul>
+    <div class="nav-badge">INF232 – EC2</div>
+  </nav>
+
+  <div class="form-page">
+
+    <!-- ERREURS -->
+    {% if erreurs %}
+    <div class="alert-box">
+      {% for e in erreurs %}
+        <div class="alert-item"> {{ e }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="form-container">
+
+      
+      <div class="form-header">
+        <div>
+          <div class="form-profil-badge"> Enquête sur les difficultés académiques</div>
+          <h2 class="form-title">Identifie tes matières difficiles</h2>
+        </div>
+        <a href="/" class="btn-back">Retour</a>
+      </div>
+
+      <!-- BARRE DE PROGRESSION-->
+      <div class="progress-strip">
+        <div class="progress-step active" id="step-ind-1">
+          <div class="step-circle">1</div>
+          <div class="step-label">Identification</div>
+        </div>
+        <div class="progress-line"></div>
+        <div class="progress-step" id="step-ind-2">
+          <div class="step-circle">2</div>
+          <div class="step-label">Difficultés</div>
+        </div>
+        <div class="progress-line"></div>
+        <div class="progress-step" id="step-ind-3">
+          <div class="step-circle">3</div>
+          <div class="step-label">Pratique</div>
+        </div>
+      </div>
+
+      <form action="/soumettre" method="POST" id="mainForm">
+
+        <!--ÉTAPE 1 : IDENTIFICATION-->
+        <div class="form-step" id="step1">
+          <div class="step-title">
+            <span class="step-num">01</span> Identification
+          </div>
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label class="form-label">Matricule <span class="req">*</span></label>
+              <input class="form-input" type="text" name="matricule"
+                     placeholder="Ex : 22S45426"
+                     value="{{ form_data.matricule if form_data else '' }}"
+                     required>
+              <div class="form-hint">Un seul envoi autorisé par matricule.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Niveau académique <span class="req">*</span></label>
+              <div class="radio-group">
+                {% for niv in niveaux %}
+                <label class="radio-card">
+                  <input type="radio" name="niveau" value="{{ niv }}"
+                    {% if form_data and form_data.get('niveau') == niv %}checked{% endif %}>
+                  <span>{{ niv }}</span>
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div class="form-group full">
+              <label class="form-label">Filière <span class="req">*</span></label>
+              <div class="filiere-grid" id="filiereGrid">
+                {% for f in filieres %}
+                <label class="filiere-card">
+                  <input type="radio" name="filiere" value="{{ f }}"
+                    {% if form_data and form_data.get('filiere') == f %}checked{% endif %}
+                    onchange="chargerMatieres('{{ f }}')">
+                  <div class="filiere-icon">
+                    {% if 'Informatique' in f %}
+                    {% elif 'Réseaux' in f %}
+                    {% elif 'Math' in f %}
+                    {% elif 'Gestion' in f %}
+                    {% else %} {% endif %}
+                  </div>
+                  <span>{{ f }}</span>
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+
+          </div>
+          <div class="step-nav">
+            <div></div>
+            <button type="button" class="btn-primary" onclick="allerEtape(2)">
+              Suivant
+            </button>
+          </div>
+        </div>
+
+        <!--ÉTAPE 2 : MATIÈRES DIFFICILES-->
+        <div class="form-step hidden" id="step2">
+          <div class="step-title">
+            <span class="step-num">02</span>
+            Matières où tu rencontres des difficultés
+          </div>
+          <p class="step-desc">Coche toutes les matières qui te posent problème dans ta filière.</p>
+
+          <div class="checkbox-grid" id="checkDifficiles">
+            <div class="matieres-placeholder">
+              Sélectionne d'abord ta filière à l'étape 1
+            </div>
+          </div>
+
+          <div class="step-nav">
+            <button type="button" class="btn-outline" onclick="allerEtape(1)"> Retour</button>
+            <button type="button" class="btn-primary" onclick="allerEtape(3)">Suivant </button>
+          </div>
+        </div>
+
+        <!--ÉTAPE 3 : MATIÈRES PRATIQUE-->
+        <div class="form-step hidden" id="step3">
+          <div class="step-title">
+            <span class="step-num">03</span>
+            Matières nécessitant plus de pratique
+          </div>
+          <p class="step-desc">Coche les matières où tu aimerais plus d'exercices, de TP ou de projets pratiques.</p>
+
+          <div class="checkbox-grid" id="checkPratique">
+            <div class="matieres-placeholder">
+               Sélectionne d'abord ta filière à l'étape 1
+            </div>
+          </div>
+
+          <div class="step-nav">
+            <button type="button" class="btn-outline" onclick="allerEtape(2)"> Retour</button>
+            <button type="submit" class="btn-primary btn-submit" id="submitBtn">
+               Soumettre mes réponses
+            </button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <div>EduCollect · TP INF232 – EC2</div>
+    <div>Université De Yaoundé II · 2026</div>
+  </footer>
+
+  <!-- Données matières injectées par Flask -->
+  <script>
+    const MATIERES = {{ matieres | tojson }};
+  </script>
+  <script src="../static/js/main.js"></script>
+</body>
+</html>

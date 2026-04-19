@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduCollect – Statistiques</title>
+  <link rel="stylesheet" href="../static/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">Edu<span>Collect</span></div>
+    <ul class="nav-links">
+      <li><a href="/">Accueil</a></li>
+      <li><a href="/dashboard" class="active">Statistiques</a></li>
+    </ul>
+    <div class="nav-badge">INF232 – EC2</div>
+  </nav>
+
+  <div class="dashboard-page">
+
+    <div class="dash-page-header">
+      <div>
+        <div class="section-label">Analyse globale</div>
+        <h2 class="dash-page-title">Tableau de bord des difficultés</h2>
+      </div>
+      <a href="/formulaire" class="btn-outline">+ Participer</a>
+    </div>
+
+    <!-- MA RÉPONSE (si vient de soumettre) -->
+    {% if stats.ma_reponse %}
+    <div class="ma-reponse-card">
+      <div class="ma-rep-header">
+        <div>
+          <div class="ma-rep-title">Ta contribution a été enregistrée !</div>
+          <div class="ma-rep-sub">
+            Matricule : <strong>{{ matricule }}</strong> ·
+            Niveau : <strong>{{ stats.ma_reponse.niveau }}</strong> ·
+            Filière : <strong>{{ stats.ma_reponse.filiere }}</strong>
+          </div>
+        </div>
+      </div>
+      <div class="ma-rep-tags">
+        <div class="tag-group">
+          <div class="tag-label"> Tes matières difficiles :</div>
+          <div class="tags">
+            {% for m in stats.mes_difficiles %}
+              <span class="tag tag-diff">{{ m }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="tag-group">
+          <div class="tag-label"> Matières nécessitant plus de pratique :</div>
+          <div class="tags">
+            {% for m in stats.mes_pratiques %}
+              <span class="tag tag-prat">{{ m }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!--KPI-->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Étudiants ayant répondu</div>
+        <div class="kpi-value accent">{{ stats.total_reponses }}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Matière la plus difficile</div>
+        <div class="kpi-value-sm">
+          {% if stats.top_difficiles %}
+            {{ stats.top_difficiles[0].matiere }}
+          {% else %}—{% endif %}
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Plus de pratique demandée</div>
+        <div class="kpi-value-sm">
+          {% if stats.top_pratique %}
+            {{ stats.top_pratique[0].matiere }}
+          {% else %}—{% endif %}
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Niveaux couverts</div>
+        <div class="kpi-value accent">5</div>
+      </div>
+    </div>
+
+    <!-- GRAPHIQUES GLOBAUX -->
+    <div class="charts-row">
+
+      <div class="chart-card">
+        <div class="chart-card-title"> Top matières difficiles (global)</div>
+        <div class="chart-wrap">
+          <canvas id="chartDifficiles"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-card-title"> Top matières nécessitant plus de pratique (global)</div>
+        <div class="chart-wrap">
+          <canvas id="chartPratique"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PAR NIVEAU -->
+    <div class="section-title" style="margin-top:2.5rem">Par niveau académique</div>
+
+    <div class="niveau-tabs">
+      {% for niv in stats.niveaux %}
+      <button type="button" class="niveau-tab {% if loop.first %}active{% endif %}"
+              onclick="afficherNiveau('{{ niv }}', this)">{{ niv }}</button>
+      {% endfor %}
+    </div>
+
+    {% for niv in stats.niveaux %}
+    <div class="niveau-panel {% if not loop.first %}hidden{% endif %}" id="panel-{{ niv|replace(' ', '-') }}">
+
+      <div class="niveau-panel-grid">
+
+        <div class="dash-card">
+          <div class="dash-card-title"> Matières difficiles en {{ niv }}</div>
+          {% if stats.par_niveau_diff[niv] %}
+            {% for item in stats.par_niveau_diff[niv] %}
+            <div class="bar-item">
+              <div class="bar-label">{{ item.matiere }}</div>
+              <div class="bar-track">
+                <div class="bar-fill bar-diff"
+                  style="width: {{ (item.nb / stats.par_niveau_diff[niv][0].nb * 100) | int }}%">
+                </div>
+              </div>
+              <div class="bar-count">{{ item.nb }}</div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="no-data">Aucune donnée pour ce niveau.</div>
+          {% endif %}
+        </div>
+
+        <div class="dash-card">
+          <div class="dash-card-title"> Pratique demandée en {{ niv }}</div>
+          {% if stats.par_niveau_prat[niv] %}
+            {% for item in stats.par_niveau_prat[niv] %}
+            <div class="bar-item">
+              <div class="bar-label">{{ item.matiere }}</div>
+              <div class="bar-track">
+                <div class="bar-fill bar-prat"
+                  style="width: {{ (item.nb / stats.par_niveau_prat[niv][0].nb * 100) | int }}%">
+                </div>
+              </div>
+              <div class="bar-count">{{ item.nb }}</div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="no-data">Aucune donnée pour ce niveau.</div>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+    {% endfor %}
+
+  </div>
+
+  <footer>
+    <div>EduCollect · TP INF232 – EC2</div>
+    <div>Université De Yaoundé II · 2026</div>
+  </footer>
+
+  <!-- Données pour Chart.js -->
+  <script>
+    const DATA_DIFF  = {{ stats.top_difficiles | tojson }};
+    const DATA_PRAT  = {{ stats.top_pratique   | tojson }};
+  </script>
+  <script src="../static/js/main.js"></script>
+</body>
+</html>
