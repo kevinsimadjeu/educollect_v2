@@ -14,14 +14,14 @@ function allerEtape(n) {
       secourir(matricule);
       afficherToast(' Entre ton matricule.', 'danger'); return;
     }
-    if(valMat.length != 8){
+    if(valMat.length != 7){
       secourir(matricule);
-      afficherToast(' Le matricule doit contenir exactement 8 caractères.', 'danger'); return;
+      afficherToast(' Le matricule doit contenir exactement 7 caractères.', 'danger'); return;
     }
 
-    if(!/^\d{2}[A-Z]\d{5}$/.test(valMat)){
+    if(!/^\d{2}[A-Z]\d{4}$/.test(valMat)){
       secourir(matricule);
-      afficherToast(' Format invalide. Exemple : 22S45838 (2 chiffres + 1 lettre  + 5 chiffres)', 'danger'); return;
+      afficherToast(' Format invalide. Exemple : 22S45838 (2 chiffres + 1 lettre  + 4 chiffres)', 'danger'); return;
     }
     
     matricule.value = valMat;
